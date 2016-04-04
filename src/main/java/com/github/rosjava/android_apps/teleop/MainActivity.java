@@ -42,7 +42,8 @@ import std_msgs.String;
  * @author murase@jsk.imi.i.u-tokyo.ac.jp (Kazuto Murase)
  */
 public class MainActivity extends RosAppActivity {
-	private RosImageView<sensor_msgs.CompressedImage> cameraView;
+	//private RosImageView<sensor_msgs.CompressedImage> cameraView;
+	private RosImageView<nav_msgs.OccupancyGrid> cameraView;
 	private RosTextView<String> textView;
 	private VirtualJoystickView virtualJoystickView;
 	private Button backButton;
@@ -62,9 +63,14 @@ public class MainActivity extends RosAppActivity {
 		super.onCreate(savedInstanceState);
 
 		switchNodemain  = new SwitchNodemain();
-        cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
+        /*cameraView = (RosImageView<sensor_msgs.CompressedImage>) findViewById(R.id.image);
         cameraView.setMessageType(sensor_msgs.CompressedImage._TYPE);
-        cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());
+        cameraView.setMessageToBitmapCallable(new BitmapFromCompressedImage());*/
+
+		cameraView = (RosImageView<nav_msgs.OccupancyGrid>) findViewById(R.id.image);
+		cameraView.setMessageType(nav_msgs.OccupancyGrid._TYPE);
+		cameraView.setMessageToBitmapCallable(new BitmapFromOccupancyGrid());
+
 		// add ros text
 		textView = (RosTextView<String>)findViewById(R.id.text);
 		textView.setMessageType(std_msgs.String._TYPE);
@@ -100,7 +106,8 @@ public class MainActivity extends RosAppActivity {
                     NodeConfiguration.newPublic(local_network_address.getHostAddress(), getMasterUri());
 
         java.lang.String joyTopic = remaps.get(getString(R.string.joystick_topic));
-        java.lang.String camTopic = remaps.get(getString(R.string.camera_topic));
+//        java.lang.String camTopic = remaps.get(getString(R.string.camera_topic));
+			java.lang.String camTopic = remaps.get(getString(R.string.map));
 
         NameResolver appNameSpace = getMasterNameSpace();
         joyTopic = appNameSpace.resolve(joyTopic).toString();
@@ -112,7 +119,7 @@ public class MainActivity extends RosAppActivity {
 			nodeMainExecutor.execute(switchNodemain, nodeConfiguration
 					.setNodeName("android_apps_pubsub/switchNodemain"));
 			nodeMainExecutor.execute(textView, nodeConfiguration
-					.setNodeName("android_gingerbread/ros_text_view"));
+					.setNodeName("android_gingerbread/ros_text_view"));//必须得写
 		nodeMainExecutor.execute(cameraView, nodeConfiguration
 				.setNodeName("android/camera_view"));
 		nodeMainExecutor.execute(virtualJoystickView,
