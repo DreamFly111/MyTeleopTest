@@ -36,6 +36,7 @@ import org.ros.node.NodeMainExecutor;
 
 import java.io.IOException;
 
+import nav_msgs.MapMetaData;
 import std_msgs.String;
 
 /**
@@ -48,6 +49,7 @@ public class MainActivity extends RosAppActivity {
 	private VirtualJoystickView virtualJoystickView;
 	private Button backButton;
 	private SwitchNodemain switchNodemain;
+	private Button onOff;
 
 	public MainActivity() {
 		// The RosActivity constructor configures the notification title and ticker messages.
@@ -71,13 +73,22 @@ public class MainActivity extends RosAppActivity {
 		cameraView.setMessageType(nav_msgs.OccupancyGrid._TYPE);
 		cameraView.setMessageToBitmapCallable(new BitmapFromOccupancyGrid());
 
+		final NodeMainExecutor nodeMainExecutor;
+		//add switch
+		onOff = (Button)findViewById(R.id.btn);
+		onOff.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				OnOffNode onOffNode = new OnOffNode(getApplicationContext());
+			}
+		});
 		// add ros text
 		textView = (RosTextView<String>)findViewById(R.id.text);
 		textView.setMessageType(std_msgs.String._TYPE);
 		textView.setMessageToStringCallable(new MessageCallable<java.lang.String, String>() {
 			@Override
 			public java.lang.String call(String string) {
-				final java.lang.String data =  string.getData();
+				final java.lang.String data = string.getData();
 				Log.i("data", data);
 				return data;
 			}
@@ -124,6 +135,8 @@ public class MainActivity extends RosAppActivity {
 				.setNodeName("android/camera_view"));
 		nodeMainExecutor.execute(virtualJoystickView,
 				nodeConfiguration.setNodeName("android/virtual_joystick"));
+		nodeMainExecutor.execute(virtualJoystickView,
+					nodeConfiguration.setNodeName("android_apps_teleop/onoff"));
         } catch (IOException e) {
             // Socket problem
         }

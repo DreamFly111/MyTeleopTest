@@ -53,6 +53,13 @@
                 android:layout_height="0dip"
                 android:layout_weight="1" />
 
+            <Button
+                android:id="@+id/btn"
+                android:text="switch"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="30dip" />
+
             <org.ros.android.view.RosTextView
                 android:id="@+id/text"
                 android:layout_width="fill_parent"
